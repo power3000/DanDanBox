@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Base64 编解码</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="page">
+    <header class="header">
+      <div class="brand">
+        <h1>Base64 编解码</h1>
+        <p class="sub">Flask 驱动 · 一次输入，同时得到编码与解码结果 · 支持文件</p>
+      </div>
+      <button class="icon-btn" id="theme-toggle" type="button" title="切换主题" aria-label="切换主题">🌙</button>
+    </header>
+
+    <nav class="segmented" role="tablist" aria-label="模式切换">
+      <button class="seg active" data-mode="text" role="tab" aria-selected="true">文本</button>
+      <button class="seg" data-mode="file" role="tab" aria-selected="false">文件</button>
+    </nav>
+
+    <main>
+      <!-- 文本：一个输入，两个结果 -->
+      <section class="panel active" id="panel-text">
+        <div class="field">
+          <span class="label">输入内容 <em class="meta" id="input-meta"></em></span>
+          <textarea id="input-text" class="input-area" placeholder="输入任意文本，下方会同时给出解码结果和编码结果…" spellcheck="false"></textarea>
+          <div class="mini-actions">
+            <button class="chip" id="input-paste" type="button">粘贴</button>
+            <button class="chip" id="input-clear" type="button">清空</button>
+          </div>
+        </div>
+
+        <div class="options">
+          <label class="check"><input type="checkbox" id="text-urlsafe"> URL 安全（<code>-</code> <code>_</code> 替代 <code>+</code> <code>/</code>）</label>
+          <label class="check"><input type="checkbox" id="text-wrap" checked> 每 76 字符换行（仅影响编码结果）</label>
+        </div>
+
+        <div class="results">
+          <div class="card">
+            <div class="card-head">
+              <h2>解码结果</h2>
+              <em class="meta" id="decode-meta"></em>
+            </div>
+            <textarea id="out-decode" readonly placeholder="输入 Base64 后自动解码" spellcheck="false"></textarea>
+            <p class="result-note" id="decode-note"></p>
+            <div class="actions">
+              <button class="btn primary" id="decode-copy" type="button">复制</button>
+              <button class="btn" id="decode-fill" type="button">填入输入</button>
+              <button class="btn" id="decode-download" type="button">下载文件</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-head">
+              <h2>编码结果</h2>
+              <em class="meta" id="encode-meta"></em>
+            </div>
+            <textarea id="out-encode" readonly placeholder="输入文本后自动编码" spellcheck="false"></textarea>
+            <p class="result-note" id="encode-note"></p>
+            <div class="actions">
+              <button class="btn primary" id="encode-copy" type="button">复制</button>
+              <button class="btn" id="encode-fill" type="button">填入输入</button>
+              <button class="btn" id="encode-download" type="button">下载 .txt</button>
+            </div>
+          </div>
+        </div>
+
+        <p class="hint">同一段输入会同时做两种处理：当作 Base64 解码，以及按 UTF-8 文本编码。解码失败时会在左侧提示。</p>
+      </section>
+
+      <!-- 文件 -->
+      <section class="panel" id="panel-file">
+        <div class="grid">
+          <div class="card">
+            <h2>文件 → Base64</h2>
+            <label class="drop" id="enc-drop">
+              <input type="file" id="enc-file" hidden>
+              <span class="drop-icon">⬆</span>
+              <span>点击选择文件，或拖拽到此处</span>
+              <small id="enc-file-meta">支持任意类型，单文件上限 32 MB</small>
+            </label>
+            <div class="options">
+              <label class="check"><input type="checkbox" id="enc-file-urlsafe"> URL 安全</label>
+              <label class="check"><input type="checkbox" id="enc-file-wrap" checked> 每 76 字符换行</label>
+            </div>
+            <div class="actions">
+              <button class="btn primary" id="enc-file-run" type="button">生成 Base64</button>
+              <button class="btn" id="enc-file-copy" type="button">复制</button>
+              <button class="btn" id="enc-file-download" type="button">下载 .txt</button>
+            </div>
+            <textarea id="enc-file-output" readonly placeholder="生成结果会显示在这里" spellcheck="false"></textarea>
+          </div>
+
+          <div class="card">
+            <h2>Base64 → 文件</h2>
+            <textarea id="dec-file-input" placeholder="粘贴 Base64 内容…" spellcheck="false"></textarea>
+            <label class="field compact">
+              <span class="label">保存文件名</span>
+              <input class="text-input" id="dec-file-name" value="decoded.bin" spellcheck="false">
+            </label>
+            <div class="actions">
+              <button class="btn primary" id="dec-file-run" type="button">解码并下载</button>
+            </div>
+            <p class="hint" id="dec-file-status">支持 data URL 前缀、URL 安全字符与换行。</p>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">Base64 · Flask · 本地运行，数据不会离开你的电脑</footer>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
